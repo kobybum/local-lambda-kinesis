@@ -2,16 +2,14 @@ language: python
 python:
 - '3.6'
 - '3.7'
-
 install: pip install -r requirements-dev.txt
 script: make test-and-lint
-
 deploy:
   provider: pypi
   python: '3.6'
   user: kobybum
   password:
-    secure: m9hKV52Fs1FtzxsQN+l+6DO3NaWhsKx8C3lEllKGRSjht3aySwYCb+wmX/jZLUIBP9Wa+r85JiUz7x2EBEvVUnZ0Z8jkb0cAdVo9mVM/TQfAjITRePv/tiQFl6PFKQB2Qyp6/rtNLrfriV1TjivcrEyoJkisqwRYj/7BcobU7SfquAWM20SNNKsCMjcVLbB31yuydqotP0RxG1gzLYz9nnt721NmElaOEU3iBVMfLhfsNCFZcqKF3qawO0x1qeF8G/pHM2FzwZelCp0O+zuMHdd+mfyZXK8yVw7RyD4MfDpUXHDPEDDkH5DZo9N/zorc1BLm006h5IJCMYQoFcq8BViAvPRN9yfwArnRwAKr5vMG0ahXShYeFquQNb0/dKTq8vvB62e4nMknVkfmY6xlpGzyPxTIbPAJAKgChlFAiwkYnAYfoQLw/S5p+X1ZOz/pTqfZqUC1ElP/kiAg32CRD+Hl9YD+3WrwQa6WGQYxh17VTqLoEWmU8GsGN8cTwJyanjylQVwCzYf0Ukn+k54wvmHNbhRCCsILxjf7tIPfoztZFFD0+soYXA4O4/z4l7nijH8IrbTvoCnDLNT9cb1cvounl9xjJnWCpCtq5RxQCIh4GoJsIblgH8VZBZ7FsZwZLSOxRGlhcaZ19NDKXEPrjMEeOCLFSS3ds0fLQL28jWQ=
+    secure: G6jAj+4+4NOud+lqPyfaW4VqpU2d0kUkvdgzjRsu/t3EsI3M2VjluB3dMsZKOQlTTpPZGrGfH2pE/TPuIxeLXBQBABpOz6ZK/MycSMy1HJqLVOCV2/qVHhwHCtMtIwf0t7zSG5N0kQFd7TtHCDQucuQUstrBVkvHci7uDCcA1LMMNZTFbqXLUBHYRefR5E9LVD0IC2adZDedqTKrLToQSpE4W7Zfg4WPOVbCjTQRO2l5kqqpxhGun5qEMTTimAcTD9Q/Jj7EKMOVwZZWWcbbbJlTDOJPnXSZXJQd+WwZVvuRo7tpeyCCZaQS3ibW3e316lmJWAxFfTkOT4hffleMOP5/wan9ZPs8FRTSO/61MeRUIyLXLcvjBv0vnr/Uq2IT2gc1aPXgJjZNZSW2/uizQORcoizgBSnm3ZYLBnKRE9p6hhunWceVeb/QdNr/U0ul1p+FeBtTjemAb0WWJBwOJBPceSPlBrgc5kScZGhF7YewTENga6FGrtfxqkv46NJ4bXQYwyDdyW7hBarzH9njtJYPiQgnveu0CEAnTfZX59MXfgOTjqTu0/HIOcFCQwedTHda8VVLgWsLFOGvMKTDfunvqXzelaRoxTDhLItqP6YVWXuD1s/Kb9XHddPgDW5IP1WQTSG+rIyZgNBNF3OS1S0t9L+88SFl2pNH3u1XyBs=
   on:
     tags: true
     python: '3.6'
