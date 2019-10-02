@@ -84,7 +84,7 @@ def run_handler_on_stream_records(
         logger.info("Invoking lambda handler with %d records", len(records))
 
         event = {"Records": records}
-        handler(event)
+        handler(event, None)
 
         time.sleep(wait_seconds)
 

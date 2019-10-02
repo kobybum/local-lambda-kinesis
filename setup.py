@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="local_lambda_kinesis",
-    version="0.0.3",
+    version="0.0.4",
     author="Koby Bass",
     description="Tool for testing lambda kinesis handlers locally using real data",
     url="https://github.com/kobybum/local-lambda-kinesis",

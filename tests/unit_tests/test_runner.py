@@ -76,5 +76,5 @@ def test_run_handler_polls_stream(get_records):
     ]
 
     assert handler.call_args_list == [
-        call({"Records": record_batch}) for record_batch in record_batches
+        call({"Records": record_batch}, None) for record_batch in record_batches
     ]
