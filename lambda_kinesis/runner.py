@@ -92,7 +92,7 @@ def run_handler_on_stream_records(
 def setup_logging():
     logging.getLogger("botocore").setLevel("WARNING")
     logging.getLogger("urllib3").setLevel("WARNING")
-    logging.basicConfig(format="%(asctime)s %(name)s - %(message)s", level=logging.DEBUG)
+    logging.basicConfig(format="%(asctime)s %(name)s - %(message)s", level=logging.INFO)
 
 
 def run_from_cli():
@@ -118,14 +118,7 @@ def run_from_cli():
         default="TRIM_HORIZON",
         choices=["TRIM_HORIZON", "LATEST"],
     )
-    parser.add_argument(
-        "-w",
-        "--wait",
-        help="Seconds to wait between reads",
-        type=int,
-        default=5,
-        choices=["TRIM_HORIZON", "LATEST"],
-    )
+    parser.add_argument("-w", "--wait", help="Seconds to wait between reads", type=int, default=5)
 
     args = parser.parse_args()
 
