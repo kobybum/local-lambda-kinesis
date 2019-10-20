@@ -21,3 +21,25 @@ At the time of writing, [AWS SAM](https://github.com/awslabs/serverless-applicat
 
 ### Environment Variables:
 The tool uses the default AWS CLI settings. To override them, set `AWS_PROFILE` and `AWS_DEFAULT_REGION`.
+
+### Developing
+
+Testing is done using , and linting is done using  and [mypy](
+pytest --disable-warnings
+	@mypy --ignore-missing-imports .
+	@black --check -l 100 .
+	@flake8 . --max-line-length=100
+
+### Contirbuting
+
+Three main tools are used for development:
+* [pytest](https://github.com/pytest-dev/pytest)
+* [flake8](https://github.com/PyCQA/flake8) - for basic linting.
+* [black](https://github.com/psf/black) - format the code to enforce style.
+* [mypy](https://github.com/python/mypy) - for type checking.
+
+Contribution is always welcome. To contibute:
+* Fork the repository
+* Create a pull request
+* Make sure the tests pass
+  if you're having issues with black, run `make format-code` or `black -l 100 .`.
