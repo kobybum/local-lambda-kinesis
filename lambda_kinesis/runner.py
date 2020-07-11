@@ -60,6 +60,7 @@ def run_handler_on_stream_records(
     handler: Callable,
     wait_seconds: int,
     *_,
+    timestamp: Optional[str] = None,
     shard_id: Optional[str] = None,
     kinesis_client=None,
 ):
@@ -74,8 +75,12 @@ def run_handler_on_stream_records(
 
     logger.info("Consuming from shard %s", shard_id)
 
+    timestamp_args = {"Timestamp": timestamp} if timestamp else {}
     shard_iterator = kinesis_client.get_shard_iterator(
-        StreamName=stream_name, ShardId=shard_id, ShardIteratorType=shard_iterator_type
+        StreamName=stream_name,
+        ShardId=shard_id,
+        ShardIteratorType=shard_iterator_type,
+        **timestamp_args,
     )["ShardIterator"]
 
     while True:
@@ -116,9 +121,15 @@ def run_from_cli():
         "--iterator-type",
         help="Shard iterator type",
         default="TRIM_HORIZON",
-        choices=["TRIM_HORIZON", "LATEST"],
+        choices=["TRIM_HORIZON", "LATEST", "AT_TIMESTAMP"],
     )
     parser.add_argument("-w", "--wait", help="Seconds to wait between reads", type=int, default=5)
+    parser.add_argument(
+        "-t",
+        "--timestamp",
+        help="Start events from timestamp, example: 2020-06-26T15:00:00.000-00:00",
+        default=None,
+    )
 
     args = parser.parse_args()
 
@@ -137,6 +148,7 @@ def run_from_cli():
         shard_id=args.shard_id,
         handler=handler,
         wait_seconds=args.wait,
+        timestamp=args.timestamp,
     )
 
 
