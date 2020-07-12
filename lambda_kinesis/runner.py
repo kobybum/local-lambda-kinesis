@@ -3,13 +3,22 @@
 import logging
 import argparse
 import boto3
+import dateutil
 import importlib
 import os
 import sys
 import time
+from datetime import datetime, timezone
 from base64 import b64encode
+from enum import Enum
 
 from typing import Dict, Tuple, NamedTuple, Optional, Callable
+
+
+class IteratorType(Enum):
+    TrimHorizon = "TRIM_HORIZON"
+    AtTimestamp = "AT_TIMESTAMP"
+    Latest = "LATEST"
 
 
 class Message(NamedTuple):
@@ -54,17 +63,30 @@ def get_records(
     return records, next_shard_iterator
 
 
+def format_kinesis_timestamp(dt: datetime):
+    """
+    Convert a datetime to a Kinesis supported timestamp value: ISO format with
+    milliseconds percision and timezone info.
+
+    Example: 2020-06-26T15:00:00.000-00:00
+    """
+    return dt.replace(tzinfo=timezone.utc).isoformat(timespec="milliseconds")
+
+
 def run_handler_on_stream_records(
     stream_name: str,
-    shard_iterator_type: str,
+    shard_iterator_type: IteratorType,
     handler: Callable,
     wait_seconds: int,
     *_,
-    timestamp: Optional[str] = None,
+    timestamp: Optional[datetime] = None,
     shard_id: Optional[str] = None,
     kinesis_client=None,
 ):
     logger.info("Starting to consume records from %s", stream_name)
+    if timestamp:
+        logger.debug("AT_TIMESTAMP %s", format_kinesis_timestamp(timestamp))
+
     kinesis_client = kinesis_client or boto3.client("kinesis")
 
     shard_id = (
@@ -75,11 +97,11 @@ def run_handler_on_stream_records(
 
     logger.info("Consuming from shard %s", shard_id)
 
-    timestamp_args = {"Timestamp": timestamp} if timestamp else {}
+    timestamp_args = {"Timestamp": format_kinesis_timestamp(timestamp)} if timestamp else {}
     shard_iterator = kinesis_client.get_shard_iterator(
         StreamName=stream_name,
         ShardId=shard_id,
-        ShardIteratorType=shard_iterator_type,
+        ShardIteratorType=shard_iterator_type.value,
         **timestamp_args,
     )["ShardIterator"]
 
@@ -121,17 +143,36 @@ def run_from_cli():
         "--iterator-type",
         help="Shard iterator type",
         default="TRIM_HORIZON",
-        choices=["TRIM_HORIZON", "LATEST", "AT_TIMESTAMP"],
+        choices=[t.value for t in IteratorType],
     )
     parser.add_argument("-w", "--wait", help="Seconds to wait between reads", type=int, default=5)
+
     parser.add_argument(
         "-t",
         "--timestamp",
-        help="Start events from timestamp, example: 2020-06-26T15:00:00.000-00:00",
+        help="""
+        Filter events from timestamp using AT_TIMESTAMP iterator type.
+        Treated as UTC and ignores any timezones in the timestamp.
+        Examples (anything supported by dateparser):
+            2020-06-26
+            2020.6.26 10:22:10.55
+        """,
         default=None,
     )
 
     args = parser.parse_args()
+
+    iterator_type = IteratorType.AtTimestamp if args.timestamp else IteratorType(args.iterator_type)
+
+    if iterator_type == IteratorType.AtTimestamp and not args.timestamp:
+        print("Error: Timestamp must be specified for iterator type AT_TIMESTAMP")
+        return
+
+    try:
+        timestamp = dateutil.parser.parse(args.timestamp) if args.timestamp else None
+    except ValueError:
+        print(f"Error: Could not parse timestamp '{args.timestamp}'")
+        return
 
     handler_path = args.handler.replace("/", ".").split(".")
     module_path, handler_name = ".".join(handler_path[:-1]), handler_path[-1]
@@ -144,11 +185,11 @@ def run_from_cli():
 
     run_handler_on_stream_records(
         stream_name=args.stream,
-        shard_iterator_type=args.iterator_type,
+        shard_iterator_type=iterator_type,
         shard_id=args.shard_id,
         handler=handler,
         wait_seconds=args.wait,
-        timestamp=args.timestamp,
+        timestamp=timestamp,
     )
 
 
