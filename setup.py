@@ -2,12 +2,12 @@ import setuptools
 
 setuptools.setup(
     name="local_lambda_kinesis",
-    version="0.0.6",
+    version="0.0.7",
     author="Koby Bass",
     description="Tool for testing lambda kinesis handlers locally using real data",
     url="https://github.com/kobybum/local-lambda-kinesis",
     packages=setuptools.find_packages(),
     python_requires=">=3.6",
     scripts=["bin/lambda_kinesis"],
-    install_requires=["boto3>=1.9.236"],
+    install_requires=["boto3>=1.9.236", "python-dateutil>=2.8.1"],
 )
